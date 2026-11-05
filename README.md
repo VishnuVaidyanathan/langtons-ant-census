@@ -16,6 +16,8 @@ Code and data for the preprint
 | `src/ant_snap.c`, `src/make_figures.py` | The figures. |
 | `proof/symbolic.py` | Runs L^(K-1)R once with K as a symbol: proves the escape formula for every K ≥ 4. |
 | `proof/highway.py` | Proves the L^(K-1)R highway goes on forever, for every K ≥ 4. |
+| `proof/write_certificate.py` | Writes `proof/certificate.txt`: every action of the symbolic run, with the numbers behind it. |
+| `proof/check_certificate.py` | Independent checker: replays the certificate and checks every line for all K ≥ 4, without using the proof program. |
 | `proof/highway_concrete.py` | The same highway test with plain numbers (used for K = 3). |
 | `proof/skeleton.py` | The observations behind the proof, checked for several K. |
 | `data/census.csv` | All 4,015 distinct machines with K = 2 to 12, class and measures. |

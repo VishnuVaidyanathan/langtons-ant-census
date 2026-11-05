@@ -44,7 +44,8 @@ path as another machine, leaving $252$ different highway paths, and that highway
 $\Rw$ in second place do not occur for fewer than seven colours.
 Our main result concerns the family $A_K = \Lw^{K-1}\Rw$. We prove that, for every $K \ge 3$,
 $A_K$ makes exactly $7{,}488$ right turns, at the same squares and in the same directions for every $K$,
-before it first reaches distance $1{,}500$ from its start, which happens at step
+before it first leaves the square box of side $2{,}998$ around its start (the edge, Section~\ref{sec:defs}),
+which happens at step
 $26{,}969 + 11{,}980\,(K-3)$, and that it then builds a diagonal highway forever, advancing two
 squares diagonally every $16K - 12$ steps.
 The proof is a single computer run in which $K$ is kept as a symbol: every square's colour is stored
@@ -79,6 +80,9 @@ colours. This paper gives one for $K \le 12$ (Section~\ref{sec:census}), reports
 strings that predict the shape (Section~\ref{sec:obs}), and then proves an exact result for the infinite
 family $A_K = \Lw^{K-1}\Rw$ (Sections~\ref{sec:family} and~\ref{sec:proof}). The proof method,
 running the ant once with $K$ as a symbol, may apply to other families.
+Throughout, the census results are \emph{experimental}: they describe each machine after a fixed
+number of steps and depend on our classification tests. Theorem~\ref{thm:main} and the lemmas of
+Sections~\ref{sec:copies} and~\ref{sec:proof} are \emph{proved}.
 
 \section{Definitions}\label{sec:defs}
 
@@ -433,6 +437,36 @@ The program \texttt{proof/highway.py} takes $i = 7{,}600$ and $P = 10$. It finds
 of $16K - 12$ for the period, and conditions (a), (b) (on the $18$ squares of $V$) and (c) all true, with
 every decision valid for $K \ge 4$. Lemma~\ref{lem:period} gives (iii) for $K \ge 4$.
 
+\subsection{A certificate that can be checked independently}\label{sec:cert}
+
+So that the proof does not rest on trusting one program, the symbolic run also writes a
+\emph{certificate} (\texttt{proof/certificate.txt}): a list of every action it takes up to its
+$7{,}610$-th right turn, each with the numbers it depends on. There are two kinds of line: a single step
+(square, direction, the square's count $a + bK$ before the visit, and the turn $\Lw$ or $\Rw$) and a spin
+(square, direction, and the number of laps $n = a + bK$). The certificate has $12{,}941$ lines:
+$9{,}135$ single steps, $3{,}805$ spins and one mark where the ant leaves the box $B$.
+
+A separate program, \texttt{proof/check\_certificate.py}, which shares no code with the proof program,
+replays the ant from the empty grid line by line. It makes no choices; it only checks. Every check has
+the form ``$a + bK \ge c$ for every $K \ge 4$'', which holds exactly when $b \ge 0$ and $a + 4b \ge c$.
+The checker verifies that:
+\begin{itemize}[nosep]
+\item each line's square, direction and count agree with its own replay;
+\item every count stays a colour, $0 \le a + bK \le K - 1$, for every $K \ge 4$;
+\item a single step turns $\Rw$ exactly when the count is $-1 + 1K = K - 1$, and turns $\Lw$ only when the
+count is at most $K - 2$ for every $K \ge 4$;
+\item a spin satisfies Lemma~\ref{lem:spin}: $n \ge 1$, and $n \le (K - 1) - \sigma(c_i)$ for each of its
+four squares, for every $K \ge 4$; before the edge is reached, no spin touches the edge of $B$;
+\item the edge mark is exactly where the replay first leaves $B$.
+\end{itemize}
+In total it checks $69{,}260$ inequalities, each valid for every $K \ge 4$. From its own replay it then
+finds the edge after $7{,}488$ right turns at step $11{,}980K - 8{,}971$, and the three conditions of
+Lemma~\ref{lem:period} at right turns $7{,}600$ and $7{,}610$, with shift $(-2,2)$ and $16K - 12$ steps per
+period. As a test of the checker, we altered the certificate in several ways (one spin made one lap longer,
+one left turn changed to a right turn, one line deleted); each change was rejected at the line where it was
+made.
+
+
 \subsection{\texorpdfstring{The case $K = 3$}{The case K = 3}}\label{sec:k3}
 
 For $K = 3$ the rule is $\Lw\Lw\Rw$ and everything is an ordinary number. A direct run
@@ -465,8 +499,9 @@ sequences by $K$ to the OEIS once they are stable.
 
 \section*{Code and data availability}
 
-All code and data are in the repository
-\url{https://github.com/VishnuVaidyanathan/langtons-ant-census}. The script \texttt{run\_all.sh} rebuilds every
+All code and data, including the proof certificate and its checker, are in the repository
+\begin{center}\url{https://github.com/VishnuVaidyanathan/langtons-ant-census}\end{center}
+The script \texttt{run\_all.sh} rebuilds every
 number, table and figure in this paper in about two minutes on a laptop. Appendix~\ref{app:code} lists
 the files.
 
@@ -520,6 +555,8 @@ File & Purpose\\
 \texttt{src/ant\_snap.c}, \texttt{src/make\_figures.py} & Figures.\\
 \texttt{proof/symbolic.py} & Symbolic run: Theorem~\ref{thm:main}(i)--(ii) for $K \ge 4$.\\
 \texttt{proof/highway.py} & Symbolic periodicity check: Theorem~\ref{thm:main}(iii) for $K \ge 4$.\\
+\texttt{proof/write\_certificate.py} & Writes the certificate \texttt{proof/certificate.txt}.\\
+\texttt{proof/check\_certificate.py} & Independent checker of the certificate (Section~\ref{sec:cert}).\\
 \texttt{proof/highway\_concrete.py} & The same check with plain numbers, used for $K = 3$.\\
 \texttt{proof/skeleton.py} & The observations behind the proof, for several $K$.\\
 \texttt{data/census.csv} & The $4{,}015$ distinct machines with class and measures.\\

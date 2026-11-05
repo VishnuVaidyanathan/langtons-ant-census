@@ -25,6 +25,9 @@ python3 src/analyse.py
 echo "== Proof: the L^(K-1)R formula and highway, for every K >= 4"
 python3 proof/symbolic.py
 python3 proof/highway.py
+echo "== Proof certificate: write it, then check it with the independent checker"
+python3 proof/write_certificate.py
+python3 proof/check_certificate.py
 echo "== Proof: K = 3 with plain numbers"
 python3 proof/highway_concrete.py 3
 echo "== Supporting observations"
