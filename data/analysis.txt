@@ -1,0 +1,87 @@
+== 1. Distinct machines by K and class ==
+K highway square triangle symmetric chaotic total
+2 1 0 0 0 0 1
+3 1 0 0 0 2 3
+4 2 0 0 2 2 6
+5 1 2 0 0 12 15
+6 2 3 0 5 17 27
+7 9 12 0 0 42 63
+8 13 22 0 10 75 120
+9 24 47 0 0 181 252
+10 54 92 0 25 324 495
+11 107 213 1 0 702 1023
+12 202 399 2 41 1366 2010
+all 416 790 3 83 2723 4015
+
+== 2. Even-run rules versus the symmetric class ==
+(False, 'chaotic') 2718
+(False, 'highway') 416
+(False, 'square') 774
+(False, 'triangle') 3
+(True, 'chaotic') 5
+(True, 'square') 16
+(True, 'symmetric') 83
+
+== 3. Class shares by first three letters (K = 6 to 12) ==
+LLL 997 {'highway': '14%', 'square': '6%', 'triangle': '0%', 'symmetric': '4%', 'chaotic': '76%'}
+LLR 998 {'highway': '20%', 'square': '16%', 'triangle': '0%', 'symmetric': '2%', 'chaotic': '62%'}
+LRL 997 {'highway': '7%', 'square': '18%', 'chaotic': '75%'}
+LRR 998 {'highway': '0%', 'square': '39%', 'symmetric': '1%', 'chaotic': '59%'}
+
+== 3b. Highways by first two letters, per K ==
+K=3 LL=1 LR=0
+K=4 LL=2 LR=0
+K=5 LL=1 LR=0
+K=6 LL=2 LR=0
+K=7 LL=8 LR=1
+K=8 LL=11 LR=2
+K=9 LL=21 LR=3
+K=10 LL=43 LR=11
+K=11 LL=89 LR=18
+K=12 LL=163 LR=39
+first LR highway (K = 7): (314536, 'LRLLRRL')
+
+== 4. Highways: letters actually read ==
+highways: 416 | machines that never read their last letters: 164
+  letters read LLRLLR         same path as LLR          machines 124
+  letters read LLLRLLLR       same path as LLLR         machines 29
+  letters read LLLLRLLLLR     same path as LLLLR        machines 6
+  letters read LLLRRRLLLR     same path as LLLRRRLLLR   machines 5
+truly different highway paths: 252
+
+== 5. L^(K-1)R: step it reaches the edge and most visits ==
+K=3 steps=26969 formula=26969 match=True maxvisits=6 2K=6
+K=4 steps=38949 formula=38949 match=True maxvisits=8 2K=8
+K=5 steps=50929 formula=50929 match=True maxvisits=10 2K=10
+K=6 steps=62909 formula=62909 match=True maxvisits=12 2K=12
+K=7 steps=74889 formula=74889 match=True maxvisits=14 2K=14
+K=8 steps=86869 formula=86869 match=True maxvisits=16 2K=16
+K=9 steps=98849 formula=98849 match=True maxvisits=18 2K=18
+K=10 steps=110829 formula=110829 match=True maxvisits=20 2K=20
+K=11 steps=122809 formula=122809 match=True maxvisits=22 2K=22
+K=12 steps=134789 formula=134789 match=True maxvisits=24 2K=24
+K=13 steps=146769 formula=146769 match=True maxvisits=26 2K=26
+K=14 steps=158749 formula=158749 match=True maxvisits=28 2K=28
+K=15 steps=170729 formula=170729 match=True maxvisits=30 2K=30
+K=16 steps=182709 formula=182709 match=True maxvisits=32 2K=32
+K=17 steps=194689 formula=194689 match=True maxvisits=34 2K=34
+K=18 steps=206669 formula=206669 match=True maxvisits=36 2K=36
+K=19 steps=218649 formula=218649 match=True maxvisits=38 2K=38
+K=20 steps=230629 formula=230629 match=True maxvisits=40 2K=40
+K=21 steps=242609 formula=242609 match=True maxvisits=42 2K=42
+K=22 steps=254589 formula=254589 match=True maxvisits=44 2K=44
+K=23 steps=266569 formula=266569 match=True maxvisits=46 2K=46
+K=24 steps=278549 formula=278549 match=True maxvisits=48 2K=48
+K=25 steps=290529 formula=290529 match=True maxvisits=50 2K=50
+K=30 steps=350429 formula=350429 match=True maxvisits=60 2K=60
+K=40 steps=470229 formula=470229 match=True maxvisits=80 2K=80
+K=50 steps=590029 formula=590029 match=True maxvisits=100 2K=100
+K=75 steps=889529 formula=889529 match=True maxvisits=150 2K=150
+K=100 steps=1189029 formula=1189029 match=True maxvisits=200 2K=200
+K=150 steps=1788029 formula=1788029 match=True maxvisits=300 2K=300
+K=200 steps=2387029 formula=2387029 match=True maxvisits=400 2K=400
+K=300 steps=3585029 formula=3585029 match=True maxvisits=600 2K=600
+K=500 steps=5981029 formula=5981029 match=True maxvisits=1000 2K=1000
+K=1000 steps=11971029 formula=11971029 match=True maxvisits=2000 2K=2000
+
+== 6. Non-highway machines under 40 squares wide after 1 million steps: 228
