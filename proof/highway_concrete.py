@@ -1,9 +1,15 @@
 """
-highway_concrete.py — the highway test of highway.py for one given K, with plain numbers.
+highway_concrete.py — plain-number cross-check of the highway, for chosen K.
 
-Usage:  python3 proof/highway_concrete.py K
-Used for K = 3, which the symbolic run (valid for K >= 4) does not cover,
-and as a cross-check of the symbolic result at any K.
+Usage:  python3 proof/highway_concrete.py K [K ...]
+
+For each K, runs L^(K-1)R step by step from the empty grid (no symbols, no spins) and
+measures from the sequence of turns alone:
+  * the shortest period of the turn sequence once it repeats;
+  * the first step from which it repeats;
+  * how far the ant moves in one period.
+For K >= 4 these should be 16K - 12, 24K - 17 and (-2, 2) (the theorem);
+K = 3 (LLR) is different: period 18 from step 39, moving (-1, 1).
 """
 import sys
 
@@ -11,52 +17,39 @@ DX = (0, 1, 0, -1)
 DY = (-1, 0, 1, 0)
 
 
-def run_with_snapshots(K, snap_events):
-    res = {}
+def measure(K):
+    n = 400 * K + 2000
+    g = {}
     x = y = 0
     d = 0
-    steps = 0
-    rturns = 0
-    snaps = {}
-    touched = set()
-    want = sorted(snap_events)
-    while True:
-        v = res.get((x, y), 0)
-        touched.add((x, y))
-        if v == K - 1:
-            d = (d + 1) & 3
-            res[(x, y)] = 0
-            rturns += 1
-            if rturns in want:
-                snaps[rturns] = dict(res=dict(res), pos=(x, y), d=d, steps=steps,
-                                     touched=set(touched))
-                touched = set()
-                if rturns == want[-1]:
-                    return snaps
-        else:
-            d = (d + 3) & 3
-            res[(x, y)] = v + 1
+    turns = []
+    pos = []
+    for _ in range(n):
+        v = g.get((x, y), 0)
+        right = v % K == K - 1
+        turns.append(right)
+        d = (d + 1) & 3 if right else (d + 3) & 3
+        g[(x, y)] = v + 1
         x += DX[d]
         y += DY[d]
-        steps += 1
+        pos.append((x, y))
+    tail = turns[n // 2:]
+    p = next(q for q in range(1, len(tail) // 3) if tail[q:] == tail[:-q])
+    start = n - p
+    while start > 0 and turns[start - 1] == turns[start - 1 + p]:
+        start -= 1
+    move = (pos[-1][0] - pos[-1 - p][0], pos[-1][1] - pos[-1 - p][1])
+    return p, start, move
 
 
-K = int(sys.argv[1])
-P, i = 10, 7600
-j = i + P
-s = run_with_snapshots(K, [i, j])
-Si, Sj = s[i], s[j]
-D = (Sj["pos"][0] - Si["pos"][0], Sj["pos"][1] - Si["pos"][1])
-V = Sj["touched"]
-H = set(Sj["res"].keys())
-shift = lambda c: (c[0] + D[0], c[1] + D[1])
-f = lambda c: c[0] * D[0] + c[1] * D[1]
-A1 = {shift(c) for c in V} - V
-a = Si["d"] == Sj["d"]
-b = all(Sj["res"].get(shift(c), 0) == Si["res"].get(c, 0) for c in V)
-c1 = not (A1 & H)
-c2 = f(D) > 0 and min(f(c) for c in A1) + f(D) > max(f(c) for c in H)
-print(f"K = {K}: shift {D}, steps per period {Sj['steps'] - Si['steps']} (16K-12 = {16 * K - 12})")
-print("(a) same direction       :", a)
-print("(b) residues repeat on V :", b, f"({len(V)} squares)")
-print("(c) fronts unvisited     :", c1, c2)
+if __name__ == "__main__":
+    ok = True
+    for K in (int(a) for a in sys.argv[1:]):
+        p, start, move = measure(K)
+        line = f"K = {K}: period {p}, repeats from step {start}, moves {move}"
+        if K >= 4:
+            good = (p, start, move) == (16 * K - 12, 24 * K - 17, (-2, 2))
+            ok &= good
+            line += f"   (theorem: {16 * K - 12}, {24 * K - 17}, (-2, 2)) {'ok' if good else 'MISMATCH'}"
+        print(line)
+    sys.exit(0 if ok else 1)

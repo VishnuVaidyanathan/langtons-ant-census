@@ -3,8 +3,9 @@ write_certificate.py — run the symbolic L^(K-1)R ant and write down every acti
 
 Usage:  python3 proof/write_certificate.py      (writes proof/certificate.txt)
 
-The run is the same as symbolic.py (K kept as a symbol, spins jumped over), continued
-to right turn 7,610 so that it also covers the highway check. Each line of the
+The run is the same as symbolic.py (K kept as a symbol, spins jumped over), from the
+empty grid until just after the ant first leaves the box B. Its first 35 lines (up to
+right turn 21) are all the highway proof needs; the rest gives the edge formula. Each line of the
 certificate is one action, with the numbers it depends on:
 
   S x y d a b T      single step at square (x, y), facing d before turning; the square's
@@ -20,7 +21,7 @@ import os
 DX = (0, 1, 0, -1)
 DY = (-1, 0, 1, 0)
 HERE = os.path.dirname(os.path.abspath(__file__))
-LAST_RIGHT_TURN = 7610
+LAST_RIGHT_TURN = 7489   # the edge comes after right turn 7,488
 
 
 def add(u, v):

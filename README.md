@@ -1,43 +1,47 @@
-# Multi-colour Langton's ants: a census for K ≤ 12 and a proof for the L^(K-1)R family
+# Highways of the generalised Langton's ants L^(K-1)R, and a census up to 12 colours
 
 Code and data for the preprint
 
-> Vishnu Vaidyanathan, *A Census of Multi-Colour Langton's Ants up to Twelve Colours, with an Exact Escape Formula and a Highway Proof for the Family L^(K-1)R*, SSRN preprint, 2026.
+> Vishnu Vaidyanathan, *Highways of the Generalised Langton's Ants L^(K-1)R from the Empty Grid:
+> a Machine-Checked Proof, and a Census up to Twelve Colours*, 2026.
+
+## Main results
+
+* **Theorem.** For every K ≥ 4, the ant L^(K-1)R started on the empty grid is on a highway from step
+  24K − 17 onward (and not from any earlier step), with shortest period exactly 16K − 12 steps, moving
+  (−2, 2) each period. For K = 2k + 2 this completes the proof of the period-(32k + 20) highway of
+  L^(2k+1)R stated as a sketch by Gajardo, Lutfalla and Rao (arXiv:2409.10124).
+* **Proof method.** One run of the ant with K kept as a symbol (colours stored as a + bK, spins round
+  2×2 loops taken in one step). The part the theorem needs is 35 lines, printed in the paper; the full
+  certificate (12,735 lines) is checked by an independent program.
+* **Census (experimental).** Of 4,015 distinct machines with 2 to 12 colours, from the empty grid after
+  1 million steps: 2,723 chaotic, 790 square, 416 highway, 83 symmetric, 3 triangle. 164 of the highway
+  machines are hidden copies of another machine; there are 252 different highway paths.
 
 ## What is here
 
 | Path | What it does |
 | --- | --- |
-| `run_all.sh` | Rebuilds every number and figure in the paper from scratch (about two minutes). |
-| `src/ant_census.c` | Runs all 2^K rule strings for one K and prints shape measures. |
-| `src/classify.py` | Removes repeats and mirror twins and gives each machine a class. |
-| `src/analyse.py` | Every census number and observation in the paper; writes `data/analysis.txt`. |
-| `src/ant_visits.c` | One rule: the step it reaches the edge and the most visits to one square. |
-| `src/ant_snap.c`, `src/make_figures.py` | The figures. |
-| `proof/symbolic.py` | Runs L^(K-1)R once with K as a symbol: proves the escape formula for every K ≥ 4. |
-| `proof/highway.py` | Proves the L^(K-1)R highway goes on forever, for every K ≥ 4. |
-| `proof/write_certificate.py` | Writes `proof/certificate.txt`: every action of the symbolic run, with the numbers behind it. |
-| `proof/check_certificate.py` | Independent checker: replays the certificate and checks every line for all K ≥ 4, without using the proof program. |
-| `proof/highway_concrete.py` | The same highway test with plain numbers (used for K = 3). |
-| `proof/skeleton.py` | The observations behind the proof, checked for several K. |
-| `data/census.csv` | All 4,015 distinct machines with K = 2 to 12, class and measures. |
-| `data/census_raw.csv` | The raw measures for all 8,188 rule strings. |
+| `run_all.sh` | Rebuilds every number, table and figure from scratch (about two minutes). |
+| `paper/paper.tex`, `paper/paper.pdf` | The preprint. |
+| `proof/highway.py` | Checks the theorem: periodicity at right turns 11 and 21, shortest period, exact start. |
+| `proof/symbolic.py` | The symbolic run of L^(K-1)R up to leaving the 2,998 × 2,998 box (Proposition 6). |
+| `proof/write_certificate.py` | Writes `proof/certificate.txt`: every action of the symbolic run. |
+| `proof/check_certificate.py` | Independent checker: replays the certificate and re-checks every claim for all K ≥ 4. |
+| `proof/make_table.py` | Builds the paper's 35-line Table 1 from the certificate. |
+| `proof/highway_concrete.py` | Plain step-by-step cross-check of the theorem for chosen K. |
+| `proof/skeleton.py` | Observations behind Proposition 6, for several K. |
+| `src/ant_census.c`, `src/classify.py`, `src/analyse.py` | The census and every number in it. |
+| `src/ant_visits.c`, `src/ant_snap.c`, `src/make_figures.py` | Single-rule runs and the figures. |
+| `data/census.csv` | All 4,015 distinct machines with class and measures. |
+| `data/census_raw.csv` | Raw measures for all 8,188 rule words. |
 | `data/highways.txt`, `data/squares.txt` | The highway and square machines, grouped by K. |
 
 ## The ant
 
-A rule string of K letters, each L or R. Every square holds a colour 0 to K−1, all 0 at the start.
+A rule word of K letters, each L or R. Every square holds a colour 0 to K−1, all 0 at the start.
 The ant reads the colour c of its square, turns left if letter c+1 of the rule is L and right if it is R,
 changes the square to (c+1) mod K, and steps forward. The classic Langton's ant is RL.
-
-## Main results
-
-* **Census.** Of 4,015 distinct machines with 2 to 12 colours: 2,723 chaotic, 790 square, 416 highway,
-  83 symmetric, 3 triangle (after 1 million steps).
-* **Hidden copies.** 164 of the highway machines never read their last letters and walk the same path
-  as another machine; there are 252 different highway paths.
-* **Theorem.** The ant L^(K-1)R reaches 1,500 squares from its start at step 26,969 + 11,980 (K − 3),
-  and builds a highway forever, moving 2 squares diagonally every 16K − 12 steps, for every K ≥ 3.
 
 ## Reproduce
 

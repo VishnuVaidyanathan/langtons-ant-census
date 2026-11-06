@@ -19,8 +19,12 @@ Checks made:
     the four squares, for every K >= 4; spins are not allowed to touch the box edge
     before the ant first leaves the box;
   * the edge mark E is exactly where the replay first leaves the box B.
-Then it computes, from its own replay, the step and right turn at the edge and the
-three highway conditions (a)-(c) of Lemma 10 at right turns 7,600 and 7,610.
+Then it computes, from its own replay:
+  * the step and right turn at which the ant first leaves the box;
+  * the highway conditions (a)-(c) of the periodicity lemma at right turns 11 and 21;
+  * the 10 gaps between right turns in that period, and that no cyclic shift by 1, 2 or
+    5 places leaves them unchanged for any K >= 4 (so 16K - 12 is the shortest period);
+  * that the trace is not periodic from the step before right turn 11.
 """
 import os
 import sys
@@ -91,7 +95,7 @@ def main():
                 d = (d + 1) & 3
                 count[(x, y)] = (0, 0)
                 rturns += 1
-                if rturns in (7600, 7610):
+                if rturns <= 21:
                     snaps[rturns] = dict(count=dict(count), pos=(x, y), d=d,
                                          steps=steps, touched=set(touched))
                     touched = set()
@@ -148,23 +152,41 @@ def main():
     print(f"edge: right turns before it = {rt}, moves = {fmt(moves)}, "
           f"step number = {fmt((moves[0] - 1, moves[1]))}")
 
-    Si, Sj = snaps[7600], snaps[7610]
+    I, P = 11, 10
+    Si, Sj = snaps[I], snaps[I + P]
     D = (Sj["pos"][0] - Si["pos"][0], Sj["pos"][1] - Si["pos"][1])
-    V = Sj["touched"]
+    V = set()
+    for t in range(I + 1, I + P + 1):
+        V |= snaps[t]["touched"]
     H = set(Sj["count"])
     shift = lambda c: (c[0] + D[0], c[1] + D[1])
     f_ = lambda c: c[0] * D[0] + c[1] * D[1]
     A = {shift(c) for c in V} - V
     a = Si["d"] == Sj["d"]
     b = all(Sj["count"].get(shift(c), (0, 0)) == Si["count"].get(c, (0, 0)) for c in V)
-    c1 = not (A & H)
-    c2 = f_(D) > 0 and min(f_(c) for c in A) + f_(D) > max(f_(c) for c in H)
+    c = (not (A & H)) and f_(D) > 0 and min(f_(x) for x in A) + f_(D) > max(f_(x) for x in H)
     period = (Sj["steps"][0] - Si["steps"][0], Sj["steps"][1] - Si["steps"][1])
-    print(f"highway: shift {D}, steps per 10 right turns {fmt(period)}")
+    start = Si["steps"]
+    print(f"highway: from right turn {I} at step {fmt(start)}, shift {D} every {fmt(period)} steps")
     print(f"  (a) same direction: {a}   (b) counts repeat on {len(V)} squares: {b}   "
-          f"(c) squares ahead unvisited: {c1 and c2}")
-    ok = (rt == 7488 and moves == (-8970, 11980) and D == (-2, 2)
-          and period == (-12, 16) and a and b and c1 and c2)
+          f"(c) squares ahead unvisited: {c}")
+
+    def differs(e1, e2):
+        """e1 != e2 for every integer K >= 4 (e = (a, b) meaning a + bK)."""
+        da, db = e1[0] - e2[0], e1[1] - e2[1]
+        if db == 0:
+            return da != 0
+        return da % db != 0 or -da // db < 4
+
+    gap = lambda t: (snaps[t + 1]["steps"][0] - snaps[t]["steps"][0],
+                     snaps[t + 1]["steps"][1] - snaps[t]["steps"][1])
+    gaps = [gap(t) for t in range(I, I + P)]
+    shortest = all(any(differs(gaps[n], gaps[(n + s) % P]) for n in range(P)) for s in (1, 2, 5))
+    exact = gap(I - 1) == (1, 0) and differs(gap(I + P - 1), (1, 0))
+    print(f"  gaps: {[fmt(g) for g in gaps]}")
+    print(f"  shortest period is {fmt(period)}: {shortest}   not periodic one step earlier: {exact}")
+    ok = (rt == 7488 and moves == (-8970, 11980) and D == (-2, 2) and period == (-12, 16)
+          and start == (-17, 24) and a and b and c and shortest and exact)
     print("CERTIFICATE VALID" if ok else "CERTIFICATE DOES NOT PROVE THE CLAIMS")
     sys.exit(0 if ok else 1)
 
