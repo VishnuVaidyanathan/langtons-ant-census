@@ -35,7 +35,7 @@ Code and data for the preprint
 | `src/ant_visits.c`, `src/ant_snap.c`, `src/make_figures.py` | Single-rule runs and the figures. |
 | `data/census.csv` | All 4,015 distinct machines with class and measures. |
 | `data/census_raw.csv` | Raw measures for all 8,188 rule words. |
-| `data/highways.txt`, `data/squares.txt` | The highway and square machines, grouped by K. |
+| `data/highways.txt`, `data/squares.txt`, `data/chaotic.txt` | The highway, square and chaotic machines, grouped by K. |
 
 ## The ant
 

@@ -131,3 +131,18 @@ for cls, name, key, note in (("highway", "highways.txt", "steps_run", "step it r
             for rule, val in order:
                 f.write(f"  {rule:<14}{val:>9,}\n")
             f.write("\n")
+
+# Chaotic list ----------------------------------------------------------------------------------
+by = collections.defaultdict(list)
+for r in rows:
+    if r["class"] == "chaotic":
+        by[int(r["K"])].append(r)
+with open(os.path.join(DATA, "chaotic.txt"), "w") as f:
+    f.write(f"All {sum(len(v) for v in by.values())} chaotic machines, K = 2 to 12\n")
+    f.write("(mirror twins merged; L-first form)\n")
+    f.write("Rule, then the box width x height after 1 million steps, and the share of the box that is coloured\n\n")
+    for K in sorted(by):
+        f.write(f"K = {K}  ({len(by[K])} machines)\n")
+        for r in sorted(by[K], key=lambda r: r["rule"]):
+            f.write(f"  {r['rule']:<14}{r['width']:>5} x {r['height']:<5}{float(r['fill']) * 100:5.0f}%\n")
+        f.write("\n")
